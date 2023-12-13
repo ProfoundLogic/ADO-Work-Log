@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@azure/msal-browser": "^3.6.0",
+    "@azure/msal-react": "^2.0.8",
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
     "@testing-library/jest-dom": "^5.17.0",
@@ -12,6 +14,7 @@
     "node-cron": "^3.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-microsoft-login": "^2.0.1",
     "react-scripts": "5.0.1",
     "serve": "^14.2.1",
     "web-vitals": "^2.1.4"

@@ -6,3 +6,5 @@ services:
       - "3000:3000"
     command:
       ["npx", "serve", "-s", "build", "&&", "node", "getLastDayWorkItems.js"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
