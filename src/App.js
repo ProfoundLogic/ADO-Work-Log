@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import workItems from "./all_cleaned.json";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
@@ -7,6 +7,7 @@ import {
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
   useMsal,
+  useAccount,
 } from "@azure/msal-react";
 
 function classNames(...classes) {
@@ -82,18 +83,38 @@ export default function Example() {
     navigator.clipboard.writeText(template);
   };
 
-  const { instance } = useMsal();
+  const { instance, accounts, inProgress } = useMsal();
+  const account = useAccount(accounts[0] || {});
 
-  const handleLogin = async () => {
-    await instance.loginRedirect();
+  useEffect(() => {
+    if (account && inProgress === "none") {
+      instance.acquireTokenSilent({
+        scopes: ["User.Read"],
+        account: account,
+      });
+    }
+  }, [account, instance, inProgress]);
+
+  const handleLogin = () => {
+    instance.loginRedirect();
   };
 
   return (
     <>
       <UnauthenticatedTemplate>
         <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-          You need to sign in first!
-          <button onClick={() => handleLogin()}>Login</button>
+          <div>You need to sign in first!</div>
+          <button
+            className={classNames(
+              !selectedNameFilter
+                ? "bg-gray-100 text-gray-900"
+                : "text-gray-700",
+              "mx-2 justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            )}
+            onClick={() => handleLogin()}
+          >
+            Login
+          </button>
         </div>
       </UnauthenticatedTemplate>
       <AuthenticatedTemplate>
@@ -166,7 +187,7 @@ export default function Example() {
                 Clear Filters
               </button>
               <button
-                onClick={copyToClipboard}
+                onClick={() => copyToClipboard()}
                 disabled={!selectedNameFilter}
                 className={classNames(
                   !selectedNameFilter
@@ -176,6 +197,20 @@ export default function Example() {
                 )}
               >
                 Copy Standup Template to Clipboard
+              </button>
+              <button
+                onClick={() => {
+                  if (window.confirm("Are you sure you want to sign out?"))
+                    instance.logoutRedirect();
+                }}
+                className={classNames(
+                  !selectedNameFilter
+                    ? "bg-gray-100 text-gray-900"
+                    : "text-gray-700",
+                  "mx-2 justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                )}
+              >
+                Sign out
               </button>
             </div>
             <div className="mt-8 flow-root">
