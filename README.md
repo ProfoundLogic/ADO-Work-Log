@@ -2,6 +2,21 @@
 
 This is a React single page application that displays work performed on Azure Dev Ops in the last week. This is designed to be deployed onto AWS Lightsail using Docker. 
 
+- [ADO-Work-Log](#ado-work-log)
+  - [Local Machine Requirements](#local-machine-requirements)
+  - [Environment Vars](#environment-vars)
+    - [AWS Credentials](#aws-credentials)
+      - [config](#config)
+      - [credentials](#credentials)
+    - [Application Environment Vars](#application-environment-vars)
+  - [Deploying an updated application to Lightsail](#deploying-an-updated-application-to-lightsail)
+    - [Creating the Container Image](#creating-the-container-image)
+    - [Testing the Container Image Locally](#testing-the-container-image-locally)
+    - [Updating the service on Lightsail](#updating-the-service-on-lightsail)
+  - [Updating the packages](#updating-the-packages)
+  - [To-Dos](#to-dos)
+
+
 ## Local Machine Requirements
 * node
 * npm or yarn
@@ -41,7 +56,10 @@ The react application also requires environmental variables that will be passed 
 | REACT_APP_PASSWORD  | Azure DevOps Personal Access Token |
 | REACT_APP_CLIENT_ID | Azure Tenant Application Client ID |
 
-## Creating the Container Image
+## Deploying an updated application to Lightsail
+After making changes to the local application, it will need to be deployed to the Lightsail container service so that the rest of the team can access it. It is very important that these steps are followed exactly to avoid damaging other Profound container services.
+
+### Creating the Container Image
 To deploy the application to Lightsail, we first need to create a container image with Docker. A container image is a type of virutal machine. Image details can be tweaked in the Dockerfile in this repository.
 
 It is very important that the environment variables are passed into the application this way, to prevent them from being included in the final Docker image and exposing our credentials.
@@ -55,7 +73,7 @@ docker build --build-arg REACT_APP_USERNAME="<REACT_APP_USERNAME>" \
 -t profoundlogicdevteam/ado-work-log .
 ```
 
-## Testing the Container Image Locally
+### Testing the Container Image Locally
 
 Before deploying the image, we need to test it first to ensure that the program is working.
 
@@ -65,16 +83,28 @@ docker compose up
 
 Navigate to [http://localhost:3000/](http://localhost:3000/) and attempt to sign in. If successful, move on from here.
 
-## Provisioning a Service Account
+### Updating the service on Lightsail
+After building the image with docker, it's now ready for deployment to the lightsail container.
+
+1. Push the image to lightstail with this command
+   
+```
+aws lightsail push-container-image --service-name services-work-review --label services-work-review --image profoundlogicdevteam/ado-work-log:latest
+```
+
+2. Deploy the newly pushed image to lightsail with this command
+
+```
+aws lightsail 
+```
+
 ## Updating the packages
 
 Occasionally the npm packages will need to be updated to ensure that the application is safe and secure. Update them with the following command:
 
 `npm i`
 
-## Updating the service on Lightsail
-
-`aws lightsail push-container-image --service-name services-work-review --label services-work-review --image profoundlogicdevteam/ado-work-log:latest`
-
-## Time Tracking Reports
-## Putting a SQLite DB Behind this
+## To-Dos
+- [ ] Time Tracking Reports
+- [ ] Putting a SQLite DB Behind this
+- [ ] Provision a Service Account
