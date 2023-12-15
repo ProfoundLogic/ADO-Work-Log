@@ -10,6 +10,7 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "child_process": "^1.0.2",
     "needle": "^3.3.1",
     "node-cron": "^3.0.3",
     "react": "^18.2.0",
@@ -17,7 +18,8 @@
     "react-microsoft-login": "^2.0.1",
     "react-scripts": "5.0.1",
     "serve": "^14.2.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "zustand": "^4.4.7"
   },
   "scripts": {
     "start": "react-scripts start",

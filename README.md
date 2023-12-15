@@ -108,3 +108,4 @@ Occasionally the npm packages will need to be updated to ensure that the applica
 - [ ] Time Tracking Reports
 - [ ] Putting a SQLite DB Behind this
 - [ ] Provision a Service Account
+- [ ] Fix the profile image in the header
