@@ -26,6 +26,7 @@ function collectWorkItems() {
   });
 }
 
+console.log("Scheduling cron job...");
 cron.schedule("0 0 * * *", () => {
   console.log("Fetching work items...");
   collectWorkItems();

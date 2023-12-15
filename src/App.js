@@ -104,6 +104,8 @@ export default function Example() {
       <UnauthenticatedTemplate>
         <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
           <div>You need to sign in first!</div>
+          <div>Client ID: {process.env.REACT_APP_CLIENT_ID}</div>
+          <div>Username: {process.env.REACT_APP_USERNAME}</div>
           <button
             className={classNames(
               !selectedNameFilter

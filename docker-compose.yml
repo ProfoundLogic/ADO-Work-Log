@@ -1,10 +1,9 @@
-version: "3"
+version: "2"
 services:
-  app:
-    build: .
+  web:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: npx serve -s build
     ports:
       - "3000:3000"
-    command:
-      ["npx", "serve", "-s", "build", "&&", "node", "getLastDayWorkItems.js"]
-    extra_hosts:
-      - "host.docker.internal:host-gateway"

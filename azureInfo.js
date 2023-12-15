@@ -2,13 +2,13 @@ const needle = require("needle");
 
 const apiVersion = "?api-version=6.0";
 const httpOptions = {
-  username: process.env.USERNAME,
-  password: process.env.PASSWORD,
+  username: process.env.REACT_APP_USERNAME,
+  password: process.env.REACT_APP_PASSWORD,
   content_type: "application/json-patch+json",
 };
 const queryHttpOptions = {
-  username: process.env.USERNAME,
-  password: process.env.PASSWORD,
+  username: process.env.REACT_APP_USERNAME,
+  password: process.env.REACT_APP_PASSWORD,
   content_type: "application/json",
 };
 
