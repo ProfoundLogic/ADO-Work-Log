@@ -2,7 +2,7 @@
   "serviceName": "services-work-review",
   "containers": {
     "services-work-log-container": {
-      "image": ":services-work-review.services-work-review.25",
+      "image": ":services-work-review.services-work-review.26",
       "ports": {
         "3000": "HTTP"
       }
