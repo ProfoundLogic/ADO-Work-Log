@@ -1,14 +1,12 @@
 #!/usr/bin/env node
 const fs = require("fs").promises;
 const azureInfo = require("./azureInfo.js");
-const cron = require("node-cron");
 const allWorkItemsUnderAreaPath = "Transformation";
 
 process.env.TZ = "UTC";
 
-collectWorkItems();
-
 function collectWorkItems() {
+  console.log("Fetching work items...");
   getAllProjectWIs().then(async (projectWIs) => {
     const projectWIRevisions = [];
     for (let projectWI of projectWIs) {
@@ -28,12 +26,6 @@ function collectWorkItems() {
     );
   });
 }
-
-// console.log("Scheduling cron job...");
-// cron.schedule("0 * * * *", () => {
-//   console.log("Fetching work items...");
-//   collectWorkItems();
-// });
 
 async function getAllProjectWIs() {
   let projectWIs = null;

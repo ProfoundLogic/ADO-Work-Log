@@ -1,112 +1,106 @@
-# ADO-Work-Log
+## Compose sample application
 
-This is a React single page application that displays work performed on Azure Dev Ops in the last week. This is designed to be deployed onto AWS Lightsail using Docker. 
+### Use with Docker Development Environments
 
-- [ADO-Work-Log](#ado-work-log)
-  - [Local Machine Requirements](#local-machine-requirements)
-  - [Environment Vars](#environment-vars)
-    - [AWS Credentials](#aws-credentials)
-      - [config](#config)
-      - [credentials](#credentials)
-    - [Application Environment Vars](#application-environment-vars)
-  - [Deploying an updated application to Lightsail](#deploying-an-updated-application-to-lightsail)
-    - [Creating the Container Image](#creating-the-container-image)
-    - [Testing the Container Image Locally](#testing-the-container-image-locally)
-    - [Updating the service on Lightsail](#updating-the-service-on-lightsail)
-  - [Updating the packages](#updating-the-packages)
-  - [To-Dos](#to-dos)
+You can open this sample in the Dev Environments feature of Docker Desktop version 4.12 or later.
 
+[Open in Docker Dev Environments <img src="../open_in_new.svg" alt="Open in Docker Dev Environments" align="top"/>](https://open.docker.com/dashboard/dev-envs?url=https://github.com/docker/awesome-compose/tree/master/react-express-mysql)
 
-## Local Machine Requirements
-* node
-* npm or yarn
-* [Docker](https://docs.docker.com/engine/install/#installation)
-* Valid AWS Credentials
-* [AWS CLI and Lightsail Control Plugin](https://lightsail.aws.amazon.com/ls/docs/en_us/articles/amazon-lightsail-install-software)
+### React application with a NodeJS backend and a MySQL database
 
-
-## Environment Vars
-### AWS Credentials
-For the AWS CLI program to work properly, you will need the following credentials to be placed in the `\.aws\` directory of your user profile. For me, this is `C:\Users\WillMitchell\.aws\`
-
-Create the following files:
-
-#### config
+Project structure:
 ```
-[default]
-region = us-east-2
+.
+├── backend
+│   ├── Dockerfile
+│   ...
+├── db
+│   └── password.txt
+├── compose.yaml
+├── frontend
+│   ├── ...
+│   └── Dockerfile
+└── README.md
 ```
 
-#### credentials
-You will need to reach out to the resource in charge of managing Profound's AWS containers. At the time of this writing, that is Matt Denninghoff. 
+[_compose.yaml_](compose.yaml)
+```
+services:
+  backend:
+    build: backend
+    ports:
+      - 80:80
+      - 9229:9229
+      - 9230:9230
+    ...
+  db:
+    # We use a mariadb image which supports both amd64 & arm64 architecture
+    image: mariadb:10.6.4-focal
+    # If you really want to use MySQL, uncomment the following line
+    #image: mysql:8.0.27
+    ...
+  frontend:
+    build: frontend
+    ports:
+    - 3000:3000
+    ...
+```
+The compose file defines an application with three services `frontend`, `backend` and `db`.
+When deploying the application, docker compose maps port 3000 of the frontend service container to port 3000 of the host as specified in the file.
+Make sure port 3000 on the host is not already being in use.
+
+> ℹ️ **_INFO_**  
+> For compatibility purpose between `AMD64` and `ARM64` architecture, we use a MariaDB as database instead of MySQL.  
+> You still can use the MySQL image by uncommenting the following line in the Compose file   
+> `#image: mysql:8.0.27`
+
+## Deploy with docker compose
 
 ```
-[default]
-aws_access_key_id = <ACCESS KEY>
-aws_secret_access_key = <SECRET KEY>
+$ docker compose up -d
+Creating network "react-express-mysql_default" with the default driver
+Building backend
+Step 1/16 : FROM node:10
+ ---> aa6432763c11
+...
+Successfully tagged react-express-mysql_frontend:latest
+WARNING: Image for service frontend was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
+Creating react-express-mysql_db_1 ... done
+Creating react-express-mysql_backend_1 ... done
+Creating react-express-mysql_frontend_1 ... done
 ```
 
-### Application Environment Vars
+## Expected result
 
-The react application also requires environmental variables that will be passed in when starting the Docker container
-
-| Key       | Value                              |
-|-----------|------------------------------------|
-| REACT_APP_USERNAME  | Microsoft Azure Email Address      |
-| REACT_APP_PASSWORD  | Azure DevOps Personal Access Token |
-| REACT_APP_CLIENT_ID | Azure Tenant Application Client ID |
-
-## Deploying an updated application to Lightsail
-After making changes to the local application, it will need to be deployed to the Lightsail container service so that the rest of the team can access it. It is very important that these steps are followed exactly to avoid damaging other Profound container services.
-
-### Creating the Container Image
-To deploy the application to Lightsail, we first need to create a container image with Docker. A container image is a type of virutal machine. Image details can be tweaked in the Dockerfile in this repository.
-
-It is very important that the environment variables are passed into the application this way, to prevent them from being included in the final Docker image and exposing our credentials.
-
-Build the image with the following command
-
+Listing containers must show containers running and the port mapping as below:
 ```
-docker build --build-arg REACT_APP_USERNAME="<REACT_APP_USERNAME>" \
---build-arg REACT_APP_PASSWORD="<REACT_APP_PASSWORD>" \
---build-arg REACT_APP_CLIENT_ID="<REACT_APP_CLIENT_ID>" \
--t profoundlogicdevteam/ado-work-log .
+$ docker ps
+CONTAINER ID        IMAGE                          COMMAND                  CREATED             STATUS                   PORTS                                                  NAMES
+f3e1183e709e        react-express-mysql_frontend   "docker-entrypoint.s…"   8 minutes ago       Up 8 minutes             0.0.0.0:3000->3000/tcp                                 react-express-mysql_frontend_1
+9422da53da76        react-express-mysql_backend    "docker-entrypoint.s…"   8 minutes ago       Up 8 minutes (healthy)   0.0.0.0:80->80/tcp, 0.0.0.0:9229-9230->9229-9230/tcp   react-express-mysql_backend_1
+a434bce6d2be        mysql:8.0.19                   "docker-entrypoint.s…"   8 minutes ago       Up 8 minutes             3306/tcp, 33060/tcp                                    react-express-mysql_db_1
 ```
 
-### Testing the Container Image Locally
+After the application starts, navigate to `http://localhost:3000` in your web browser.
 
-Before deploying the image, we need to test it first to ensure that the program is working.
+![page](./output.png)
 
+
+The backend service container has the port 80 mapped to 80 on the host.
 ```
-docker compose up
-```
-
-Navigate to [http://localhost:3000/](http://localhost:3000/) and attempt to sign in. If successful, move on from here.
-
-### Updating the service on Lightsail
-After building the image with docker, it's now ready for deployment to the lightsail container.
-
-1. Push the image to lightstail with this command
-   
-```
-aws lightsail push-container-image --service-name services-work-review --label services-work-review --image profoundlogicdevteam/ado-work-log:latest
+$ curl localhost:80
+{"message":"Hello from MySQL 8.0.19"}
 ```
 
-2. Deploy the newly pushed image to lightsail with this command
+Stop and remove the containers
+```
+$ docker compose down
+Stopping react-express-mysql_frontend_1 ... done
+Stopping react-express-mysql_backend_1  ... done
+Stopping react-express-mysql_db_1       ... done
+Removing react-express-mysql_frontend_1 ... done
+Removing react-express-mysql_backend_1  ... done
+Removing react-express-mysql_db_1       ... done
+Removing network react-express-mysql_default
 
 ```
-aws lightsail 
-```
-
-## Updating the packages
-
-Occasionally the npm packages will need to be updated to ensure that the application is safe and secure. Update them with the following command:
-
-`npm i`
-
-## To-Dos
-- [ ] Time Tracking Reports
-- [ ] Putting a SQLite DB Behind this
-- [ ] Provision a Service Account
-- [ ] Fix the profile image in the header
-- [ ] Backend server using: https://stackoverflow.com/questions/39557764/running-two-nodejs-apps-in-one-docker-image

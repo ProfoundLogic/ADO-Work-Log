@@ -8,7 +8,7 @@ import { PublicClientApplication } from "@azure/msal-browser";
 
 const configuration = {
   auth: {
-    clientId: process.env.REACT_APP_CLIENT_ID,
+    clientId: process.env.REACT_APP_CLIENTID,
   },
 };
 

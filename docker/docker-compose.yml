@@ -1,9 +1,0 @@
-version: "2"
-services:
-  web:
-    build:
-      context: ./
-      dockerfile: Dockerfile
-    command: npx serve -s build
-    ports:
-      - "3000:3000"

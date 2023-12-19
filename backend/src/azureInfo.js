@@ -93,7 +93,6 @@ async function queryWIs(query, topCount, justIDs, includeRelationships = true) {
       }`;
 
     let queryUrl = queryApiUrl + `&$top=${topCount}`;
-    console.log(queryHttpOptions);
     let queryWIs = await needle(
       "POST",
       queryUrl,
@@ -112,7 +111,9 @@ async function queryWIs(query, topCount, justIDs, includeRelationships = true) {
         lastWorkItemID = wi.id;
       }
     } else {
-      if (queryWIs.body.workItems == null) logger.log(queryWIs.body, "error");
+      if (queryWIs.body.workItems == null) {
+        logger.log(queryWIs.body, "error");
+      }
       done = true;
     }
 
