@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Necessary for environment variable setup
-COPY create-env-file.sh ./create-env-file.sh
+COPY ./docker/create-env-file.sh ./create-env-file.sh
 
 # Install the application's dependencies inside the container
 RUN npm install 

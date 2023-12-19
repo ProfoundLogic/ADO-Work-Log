@@ -6,6 +6,8 @@ const allWorkItemsUnderAreaPath = "Transformation";
 
 process.env.TZ = "UTC";
 
+collectWorkItems();
+
 function collectWorkItems() {
   getAllProjectWIs().then(async (projectWIs) => {
     const projectWIRevisions = [];
@@ -19,6 +21,7 @@ function collectWorkItems() {
       }
     }
 
+    console.log("Writing to file...");
     await fs.writeFile(
       `./all_cleaned.json`,
       JSON.stringify(projectWIRevisions, null, 2)
@@ -26,11 +29,11 @@ function collectWorkItems() {
   });
 }
 
-console.log("Scheduling cron job...");
-cron.schedule("0 * * * *", () => {
-  console.log("Fetching work items...");
-  collectWorkItems();
-});
+// console.log("Scheduling cron job...");
+// cron.schedule("0 * * * *", () => {
+//   console.log("Fetching work items...");
+//   collectWorkItems();
+// });
 
 async function getAllProjectWIs() {
   let projectWIs = null;
@@ -177,3 +180,7 @@ function getOneWorkWeekAgo() {
   date.setDate(date.getDate() - daysToSubtract - weekends);
   return date;
 }
+
+module.exports = {
+  collectWorkItems,
+};

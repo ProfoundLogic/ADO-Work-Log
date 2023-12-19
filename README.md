@@ -109,3 +109,4 @@ Occasionally the npm packages will need to be updated to ensure that the applica
 - [ ] Putting a SQLite DB Behind this
 - [ ] Provision a Service Account
 - [ ] Fix the profile image in the header
+- [ ] Backend server using: https://stackoverflow.com/questions/39557764/running-two-nodejs-apps-in-one-docker-image

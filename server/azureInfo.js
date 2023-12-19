@@ -1,4 +1,6 @@
 const needle = require("needle");
+const logger = require("./logger.js");
+const fs = require("fs").promises;
 
 const apiVersion = "?api-version=6.0";
 const httpOptions = {
@@ -17,7 +19,7 @@ const project = "Transformation";
 
 const rootURL = `https://dev.azure.com/${organization}/${project}`;
 const crudApiURL = `${rootURL}/_apis/wit/workitems/`;
-const queryApiUrl = `${rootURL}/_apis/wit/wiql${apiVersion}`;
+const queryApiUrl = `${rootURL}/_apis/wit/wiql?api-version=7.1-preview.2`;
 const deleteAPIUrl = `${rootURL}/_apis/wit/workitemsdelete${apiVersion}`;
 
 const getWorkItems = crudApiURL + `${apiVersion}&$top=1000&ids=`;
@@ -83,6 +85,7 @@ async function queryWIs(query, topCount, justIDs, includeRelationships = true) {
 
   do {
     let queryParts = query.split(/ Where /i);
+
     query =
       queryParts.shift() +
       ` WHERE [System.Id] > ${lastWorkItemID} ${
@@ -90,12 +93,14 @@ async function queryWIs(query, topCount, justIDs, includeRelationships = true) {
       }`;
 
     let queryUrl = queryApiUrl + `&$top=${topCount}`;
+    console.log(queryHttpOptions);
     let queryWIs = await needle(
       "POST",
       queryUrl,
       JSON.stringify({ query }),
       queryHttpOptions
     );
+
     if (
       queryWIs &&
       queryWIs.body &&
