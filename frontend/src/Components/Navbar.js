@@ -4,7 +4,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { AuthenticatedTemplate, useMsal } from "@azure/msal-react";
 
 import { classNames } from "../utils";
-import useStore from "../store.js";
+import { useStore } from "../store.ts";
 
 export default function Example() {
   const { instance } = useMsal();

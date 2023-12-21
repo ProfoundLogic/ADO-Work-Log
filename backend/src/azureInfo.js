@@ -3,6 +3,7 @@ const logger = require("./logger.js");
 const fs = require("fs").promises;
 
 const apiVersion = "?api-version=6.0";
+
 const httpOptions = {
   username: process.env.REACT_APP_USERNAME,
   password: process.env.REACT_APP_PASSWORD,
@@ -40,8 +41,6 @@ module.exports = {
   queryWIs,
   getAllWorkItems,
   updateWorkItem,
-  createWorkItem,
-  deleteWorkItems,
 };
 
 async function updateWorkItem(id, parms) {
@@ -61,7 +60,7 @@ async function updateWorkItem(id, parms) {
 async function getWI(id) {
   let getUrl = crudApiURL + `${id}${apiVersion}`;
 
-  let getWI = await needle("GET", getUrl, httpOptions);
+  let getWI = await needle.get(getUrl, httpOptions);
   if (!getWI.body.id) logger.log(getWI.body, "error");
   return getWI.body;
 }
@@ -75,6 +74,8 @@ async function getWIRevisions(id) {
 }
 
 async function queryWIs(query, topCount, justIDs, includeRelationships = true) {
+  if (queryHttpOptions.username == null || queryHttpOptions.password == null)
+    console.error("Missing username or password", queryHttpOptions);
   if (typeof justIDs != "boolean") justIDs = false;
   if (typeof includeRelationships != "boolean") includeRelationships = true;
 
@@ -93,6 +94,7 @@ async function queryWIs(query, topCount, justIDs, includeRelationships = true) {
       }`;
 
     let queryUrl = queryApiUrl + `&$top=${topCount}`;
+
     let queryWIs = await needle(
       "POST",
       queryUrl,
@@ -151,59 +153,4 @@ async function getAllWorkItems(wiIds, includeRelationships = true) {
   } while (wiIds.length);
 
   return !isArray ? allWI[0] : allWI;
-}
-
-async function createWorkItem(parms) {
-  let createURL = crudApiURL + "$" + parms["System.WorkItemType"] + apiVersion;
-
-  if (!Array.isArray(parms)) parms = turnFieldsObjectIntoParms(parms);
-
-  let createWI = await needle(
-    "POST",
-    createURL,
-    JSON.stringify(parms),
-    httpOptions
-  );
-  if (!createWI.body || !createWI.body.id) logger.log(createWI.body, "error");
-
-  return createWI.body;
-}
-
-async function deleteWorkItems(ids, destroy) {
-  if (!Array.isArray(ids)) ids = [ids];
-  let parms = {
-    ids: ids,
-    destroy: destroy,
-    skipNotifications: true,
-  };
-
-  let deleteWIs = await needle(
-    "POST",
-    deleteAPIUrl,
-    JSON.stringify(parms),
-    httpOptions
-  );
-  if (deleteWIs.errorCode) logger.log(deleteWIs.body, "error");
-
-  return destroy ? null : deleteWIs.body;
-}
-
-function turnFieldsObjectIntoParms(fields) {
-  let parms = [];
-  for (let prop in fields) {
-    if (prop == "/relations/-") {
-      if (!Array.isArray(fields[prop])) fields[prop] = [fields[prop]];
-      for (let value of fields[prop])
-        parms.push({ op: "add", path: prop, value: value });
-    } else if (prop == "System.Tags")
-      parms.push({
-        op: "replace",
-        path: `/fields/${prop}`,
-        value: fields[prop],
-      });
-    else {
-      parms.push({ op: "add", path: `/fields/${prop}`, value: fields[prop] });
-    }
-  }
-  return parms;
 }

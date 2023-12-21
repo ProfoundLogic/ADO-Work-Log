@@ -1,8 +1,13 @@
-import { getMostRecentWorkItem } from "../../store";
+import { useStore } from "../../store.ts";
 import { formatDates } from "../../utils";
+
 export default function WorkItemsHeader() {
-  const lastUpdated = formatDates(getMostRecentWorkItem().lastUpdated);
-  console.log(lastUpdated);
+  const getMostRecentWorkItem = useStore(
+    (state) => state.getMostRecentWorkItem
+  );
+  const mostRecentWorkItem = getMostRecentWorkItem();
+  const lastUpdated = formatDates(mostRecentWorkItem.lastUpdated, true);
+
   return (
     <div className="md:flex md:items-center md:justify-between">
       <div className="min-w-0 flex-1">

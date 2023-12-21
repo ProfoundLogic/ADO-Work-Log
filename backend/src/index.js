@@ -1,5 +1,5 @@
 const app = require("./server");
-const { port } = require("./config");
+const { port } = require("./db/config");
 const cron = require("node-cron");
 
 const server = app.listen(port, function () {

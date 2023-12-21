@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 const fs = require("fs").promises;
+
 const azureInfo = require("./azureInfo.js");
+const database = require("./db/database.js");
+
 const allWorkItemsUnderAreaPath = "Transformation";
 
 process.env.TZ = "UTC";
@@ -9,6 +12,7 @@ function collectWorkItems() {
   console.log("Fetching work items...");
   getAllProjectWIs().then(async (projectWIs) => {
     const projectWIRevisions = [];
+
     for (let projectWI of projectWIs) {
       let hasChanges = await hasChangedItems(projectWI);
 
@@ -19,11 +23,23 @@ function collectWorkItems() {
       }
     }
 
-    console.log("Writing to file...");
-    await fs.writeFile(
-      `./all_cleaned.json`,
-      JSON.stringify(projectWIRevisions, null, 2)
-    );
+    if (!projectWIRevisions.length) {
+      console.log("No revisions to write. Exiting...");
+    } else {
+      console.log("Writing to file...");
+      await fs.writeFile(
+        `./all_cleaned.json`,
+        JSON.stringify(projectWIRevisions, null, 2)
+      );
+
+      console.log("Writing to db...");
+      database
+        .insert(projectWIRevisions)
+        .into("WorkItems")
+        .onConflict()
+        .ignore()
+        .then((rows) => console.log("Rows inserted: ", rows.length));
+    }
   });
 }
 
@@ -112,65 +128,53 @@ async function buildMatrix(projectWI) {
     }
   }
 
-  const oneWeekAgo = getOneWorkWeekAgo();
+  console.log(
+    `Found ${matrix.length} work items for Project Work Item ${projectWI.id}. Flattening...`
+  );
 
-  const flattenedMatrix = matrix
-    .map((x) => {
-      return {
-        id: x.id,
-        revision: x.wi.rev,
-        title: x.wi.fields["System.Title"],
-        assignedTo:
-          x.wi.fields["System.AssignedTo"]?.displayName || "Unassigned",
-        state: x.wi.fields["System.State"],
-        lastUpdated: x.wi.fields["System.ChangedDate"],
-        created: x.wi.fields["System.CreatedDate"],
-      };
-    })
-    .filter((x) => {
-      return new Date(x.lastUpdated) > oneWeekAgo;
-    });
+  const flattenedMatrix = matrix.map((x) => {
+    return {
+      workItemId: x.id,
+      revision: x.wi.rev,
+      title: x.wi.fields["System.Title"],
+      assignedTo: x.wi.fields["System.AssignedTo"]?.displayName || "Unassigned",
+      state: x.wi.fields["System.State"],
+      lastUpdated: x.wi.fields["System.ChangedDate"],
+      created: x.wi.fields["System.CreatedDate"],
+    };
+  });
+
+  console.log("Fetching work item revisions...");
 
   const revisions = [];
   for (const wi of flattenedMatrix) {
-    const wiRevisions = await azureInfo.getWIRevisions(wi.id);
+    const wiRevisions = await azureInfo.getWIRevisions(wi.workItemId);
     revisions.push(wiRevisions);
   }
+
+  console.log(`Flattening ${revisions.length} work item revisions...`);
 
   const cleanedRevisions = revisions.reduce((acc, cur) => {
     return [...acc, ...cur.value];
   }, []);
 
-  const flattenedRevisions = cleanedRevisions
-    .map((x) => {
-      return {
-        id: x.id,
-        revision: x.rev,
-        title: x.fields["System.Title"],
-        assignedTo: x.fields["System.AssignedTo"]?.displayName || "Unassigned",
-        state: x.fields["System.State"],
-        lastUpdated: x.fields["System.ChangedDate"],
-        created: x.fields["System.CreatedDate"],
-      };
-    })
-    .filter((x) => {
-      return new Date(x.lastUpdated) > oneWeekAgo;
-    });
+  console.log(`Cleaning work item revisions...`);
+
+  const flattenedRevisions = cleanedRevisions.map((x) => {
+    return {
+      workItemId: x.id,
+      revision: x.rev,
+      title: x.fields["System.Title"],
+      assignedTo: x.fields["System.AssignedTo"]?.displayName || "Unassigned",
+      state: x.fields["System.State"],
+      lastUpdated: x.fields["System.ChangedDate"],
+      created: x.fields["System.CreatedDate"],
+    };
+  });
+
+  console.log(`Returned ${flattenedRevisions.length} work item revisions.`);
 
   return flattenedRevisions;
-}
-
-function getOneWorkWeekAgo() {
-  let date = new Date();
-  let dayOfWeek = date.getDay();
-  let daysToSubtract = 5;
-
-  // Subtract the number of weekends
-  let weekends = Math.floor(daysToSubtract / 5) * 2;
-  if (dayOfWeek - (daysToSubtract % 5) < 1) weekends += 2;
-
-  date.setDate(date.getDate() - daysToSubtract - weekends);
-  return date;
 }
 
 module.exports = {

@@ -6,15 +6,32 @@ import {
 } from "@azure/msal-react";
 import { LockClosedIcon } from "@heroicons/react/20/solid";
 
-import { classNames, callMsGraph } from "../utils.js";
+import { classNames } from "../utils.js";
+import { useStore } from "../store.ts";
 
 export default function SignedOut() {
+  const setProfileImageURL = useStore((state) => state.setProfileImageURL);
+
   const handleLogin = () => {
     instance.loginRedirect();
   };
 
   const { instance, accounts, inProgress } = useMsal();
   const account = useAccount(accounts[0] || {});
+
+  const callMsGraph = async (token) => {
+    const headers = new Headers();
+    headers.append("Authorization", `Bearer ${token}`);
+    // Add additional fields here
+    return fetch(`https://graph.microsoft.com/v1.0/me/photo/$value`, {
+      method: "GET",
+      headers,
+    }).then(async (response) => {
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      setProfileImageURL(url);
+    });
+  };
 
   useEffect(() => {
     if (account && inProgress === "none") {
@@ -27,7 +44,7 @@ export default function SignedOut() {
           callMsGraph(response.accessToken);
         });
     }
-  }, [account, instance, inProgress]);
+  }, [account, instance, inProgress, callMsGraph]);
 
   return (
     <UnauthenticatedTemplate>

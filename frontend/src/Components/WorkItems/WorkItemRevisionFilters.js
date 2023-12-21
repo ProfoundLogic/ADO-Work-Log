@@ -3,14 +3,12 @@ import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 import { classNames } from "../../utils.js";
-import useStore from "../../store.js";
+import { useStore } from "../../store.ts";
 
 export default function WorkItemRevisionFilters() {
   const selectedNameFilter = useStore((state) => state.selectedNameFilter);
-  const nameFilterOptions = useStore((state) => state.getNameFilterOptions());
-  const setSelectedNameFilter = useStore(
-    (state) => state.setSelectedNameFilter
-  );
+  const nameFilterOptions = useStore((state) => state.getNameFilterOptions)();
+  const setNameFilter = useStore((state) => state.setSelectedNameFilter);
 
   return (
     <>
@@ -43,7 +41,7 @@ export default function WorkItemRevisionFilters() {
                 <Menu.Item key={nameFilterOption}>
                   {({ active }) => (
                     <button
-                      onClick={() => setSelectedNameFilter(nameFilterOption)}
+                      onClick={() => setNameFilter(nameFilterOption)}
                       className={classNames(
                         active ? "bg-gray-100 text-gray-900" : "text-gray-700",
                         "block px-4 py-2 text-sm w-full text-left"
@@ -59,7 +57,7 @@ export default function WorkItemRevisionFilters() {
         </Transition>
       </Menu>
       <button
-        onClick={() => setSelectedNameFilter("")}
+        onClick={() => setNameFilter("")}
         className="mx-2 justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
       >
         Clear Filters

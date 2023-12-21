@@ -1,16 +1,24 @@
-import useStore from "./store.js";
+import { useStore } from "./store.ts";
 
 export function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export const formatDates = (dateString) => {
+export const formatDates = (dateString, includeTime = false) => {
   const date = new Date(dateString);
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0"); // January is 0!
   const year = String(date.getFullYear()).substr(-2);
 
-  return month + "/" + day + "/" + year;
+  let formattedDate = month + "/" + day + "/" + year;
+
+  if (includeTime) {
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    formattedDate += ` ${hours}:${minutes}`;
+  }
+
+  return formattedDate;
 };
 
 export const getOneWorkDayAgo = () => {
@@ -25,20 +33,4 @@ export const getOneWorkDayAgo = () => {
 
   date.setDate(date.getDate() - daysToSubtract);
   return date;
-};
-
-export const callMsGraph = async (token) => {
-  const setProfileImageURL = useStore.getState().setProfileImageURL;
-
-  const headers = new Headers();
-  headers.append("Authorization", `Bearer ${token}`);
-  // Add additional fields here
-  return fetch(`https://graph.microsoft.com/v1.0/me/photo/$value`, {
-    method: "GET",
-    headers,
-  }).then(async (response) => {
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    setProfileImageURL(url);
-  });
 };

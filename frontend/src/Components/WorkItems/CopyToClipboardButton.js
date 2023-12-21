@@ -1,8 +1,9 @@
-import useStore, { getFilteredWorkItems } from "../../store.js";
+import { useStore } from "../../store.ts";
 import { getOneWorkDayAgo } from "../../utils.js";
 
 export default function CopyToClipboardButton() {
   const selectedNameFilter = useStore((state) => state.selectedNameFilter);
+  const getFilteredWorkItems = useStore((state) => state.getFilteredWorkItems);
   const filteredWorkItems = getFilteredWorkItems();
   const oneWorkDayAgo = getOneWorkDayAgo();
 
@@ -19,7 +20,7 @@ export default function CopyToClipboardButton() {
           `* [${workItem.id}](${url}) - ${workItem.title} - ${workItem.state}\n`
         );
       }, "*Yesterday:*\n")
-      .concat("*Today*:\n*Blockers*:\n\n*16th Minute:*");
+      .concat("*Today*:\n*Blockers*:\n*16th Minute:*");
 
     navigator.clipboard.writeText(template);
   };

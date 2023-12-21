@@ -1,8 +1,11 @@
 import { formatDates } from "../../utils.js";
-import { getFilteredWorkItems } from "../../store.js";
+import { useStore } from "../../store.ts";
 
 export default function WorkItemsTable() {
+  const getFilteredWorkItems = useStore((state) => state.getFilteredWorkItems);
   const filteredWorkItems = getFilteredWorkItems();
+
+  const selectedNameFilter = useStore((state) => state.selectedNameFilter);
 
   return (
     <div className="flow-root">
