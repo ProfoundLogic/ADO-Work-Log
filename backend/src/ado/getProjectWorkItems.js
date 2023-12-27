@@ -36,6 +36,7 @@ async function getProjectWorkItems() {
           state: x.fields["System.State"],
           lastUpdated: x.fields["System.ChangedDate"],
           created: x.fields["System.CreatedDate"],
+          areaPath: x.fields["System.AreaPath"],
         };
       });
 

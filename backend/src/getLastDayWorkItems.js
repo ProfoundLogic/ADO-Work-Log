@@ -8,6 +8,7 @@ const allWorkItemsUnderAreaPath = "Transformation";
 
 process.env.TZ = "UTC";
 
+collectWorkItems();
 function collectWorkItems() {
   console.log("Fetching work items...");
   getAllProjectWIs().then(async (projectWIs) => {
@@ -86,6 +87,7 @@ async function buildMatrix(projectWI) {
     .join("\\");
   let customerPath = projectPath.replace("Transformation\\", "") + " Testing";
 
+  console.log(projectWI.fields["System.AreaPath"]);
   const areaPaths = [projectPath, customerPath];
 
   const matrix = [];

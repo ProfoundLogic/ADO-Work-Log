@@ -1,7 +1,3 @@
-const fs = require("fs");
-
-const readFileSync = (filename) => fs.readFileSync(filename).toString("utf8");
-
 // Constants
 module.exports = {
   database: {
@@ -9,9 +5,7 @@ module.exports = {
     port: 3306,
     database: process.env.DATABASE_DB,
     user: process.env.DATABASE_USER,
-    password: process.env.DATABASE_PASSWORD
-      ? readFileSync(process.env.DATABASE_PASSWORD)
-      : null,
+    password: process.env.DATABASE_PASSWORD,
   },
   port: process.env.PORT || 8080,
 };

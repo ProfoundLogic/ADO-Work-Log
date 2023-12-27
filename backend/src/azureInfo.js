@@ -1,5 +1,4 @@
 const needle = require("needle");
-const logger = require("./logger.js");
 const fs = require("fs").promises;
 
 const apiVersion = "?api-version=6.0";
@@ -130,9 +129,7 @@ async function queryWIs(query, topCount, justIDs, includeRelationships = true) {
   return await getAllWorkItems(wiIds, includeRelationships);
 }
 
-async function getAllWorkItems(wiIds, includeRelationships = true) {
-  if (typeof includeRelationships != "boolean") includeRelationships = true;
-
+async function getAllWorkItems(wiIds) {
   let isArray = Array.isArray(wiIds);
 
   if (!isArray) wiIds = [wiIds];
@@ -140,8 +137,7 @@ async function getAllWorkItems(wiIds, includeRelationships = true) {
   let allWI = [];
   do {
     let batch = wiIds.splice(0, 100);
-    let getWorkItemsUrl = getWorkItems + batch.join(",");
-    if (includeRelationships) getWorkItemsUrl += "&$expand=relations";
+    let getWorkItemsUrl = getWorkItems + batch.join(",") + "&$expand=relations";
     let queryWIs = await needle("GET", getWorkItemsUrl, httpOptions);
     if (
       queryWIs &&
