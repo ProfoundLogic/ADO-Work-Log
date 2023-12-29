@@ -13,6 +13,7 @@
     "test-wait-debuger": "cross-env NODE_ENV=test PORT=8081 mocha --no-timeouts --exit --inspect-brk=0.0.0.0:9230"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "cron": "^3.1.6",
     "dotenv": "^16.3.1",
     "express": "^4.17.1",

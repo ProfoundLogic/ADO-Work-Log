@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS WorkItems (
-  id INT PRIMARY KEY,
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  workItemId INT,
   revision INT,
   title VARCHAR(255),
   assignedTo VARCHAR(255),

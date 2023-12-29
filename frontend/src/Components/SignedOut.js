@@ -19,21 +19,21 @@ export default function SignedOut() {
   const { instance, accounts, inProgress } = useMsal();
   const account = useAccount(accounts[0] || {});
 
-  const callMsGraph = async (token) => {
-    const headers = new Headers();
-    headers.append("Authorization", `Bearer ${token}`);
-    // Add additional fields here
-    return fetch(`https://graph.microsoft.com/v1.0/me/photo/$value`, {
-      method: "GET",
-      headers,
-    }).then(async (response) => {
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      setProfileImageURL(url);
-    });
-  };
-
   useEffect(() => {
+    const callMsGraph = async (token) => {
+      const headers = new Headers();
+      headers.append("Authorization", `Bearer ${token}`);
+      // Add additional fields here
+      return fetch(`https://graph.microsoft.com/v1.0/me/photo/$value`, {
+        method: "GET",
+        headers,
+      }).then(async (response) => {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setProfileImageURL(url);
+      });
+    };
+
     if (account && inProgress === "none") {
       instance
         .acquireTokenSilent({
@@ -44,7 +44,7 @@ export default function SignedOut() {
           callMsGraph(response.accessToken);
         });
     }
-  }, [account, instance, inProgress, callMsGraph]);
+  }, [account, instance, inProgress, setProfileImageURL]);
 
   return (
     <UnauthenticatedTemplate>

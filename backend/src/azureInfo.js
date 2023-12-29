@@ -20,7 +20,6 @@ const project = "Transformation";
 const rootURL = `https://dev.azure.com/${organization}/${project}`;
 const crudApiURL = `${rootURL}/_apis/wit/workitems/`;
 const queryApiUrl = `${rootURL}/_apis/wit/wiql?api-version=7.1-preview.2`;
-const deleteAPIUrl = `${rootURL}/_apis/wit/workitemsdelete${apiVersion}`;
 
 const getWorkItems = crudApiURL + `${apiVersion}&$top=1000&ids=`;
 

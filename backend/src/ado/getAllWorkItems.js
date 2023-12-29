@@ -16,7 +16,6 @@ async function getAllWorkItems(wiIds) {
   let allWI = [];
   do {
     let batch = wiIds.splice(0, 100);
-    console.log(batch);
     let getWorkItemsUrl = url + batch.join(",") + "&$expand=relations";
     let queryWIs = await needle("GET", getWorkItemsUrl, httpOptions);
 

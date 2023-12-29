@@ -15,12 +15,17 @@ async function hasChangedItems(projectWI) {
   const currentProjectWI = await database
     .select()
     .from("WorkItems")
-    .where("id", projectWI.id)
+    .where("workItemId", projectWI.workItemId)
     .first()
     .then((rows) => rows);
 
+  if (currentProjectWI == null) {
+    console.log("No current work item found, pull from ADO.");
+    return true;
+  }
+
   let query = `Select [System.Id], [System.Title] From WorkItems Where [System.Id] <> ${
-    currentProjectWI.id
+    currentProjectWI.workItemId
   } AND [System.TeamProject] = @project AND [System.AreaPath] UNDER 'Transformation' AND [System.ChangedDate] >= '${currentProjectWI.lastUpdated
     .split("T")
     .shift()}'`;

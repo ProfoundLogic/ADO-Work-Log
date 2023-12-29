@@ -1,12 +1,14 @@
 import { AuthenticatedTemplate } from "@azure/msal-react";
 
-import SignedOut from "./Components/SignedOut.js";
-import WorkItemsTable from "./Components/WorkItems/WorkItemsTable.js";
-import Navbar from "./Components/Navbar.js";
-import WorkItemsHeader from "./Components/WorkItems/WorkItemsHeader.js";
-import WorkItemsActionBar from "./Components/WorkItems/WorkItemsActionBar.js";
+import SignedOut from "../SignedOut";
+import WorkItemsTable from "./WorkItemsTable";
+import WorkItemsHeader from "./WorkItemsHeader";
+import WorkItemsActionBar from "./WorkItemsActionBar";
 
-export default function App() {
+import Navbar from "../Navbar";
+
+// Rehome the work items page here and rename
+export default function WorkItemsPage() {
   return (
     <>
       <Navbar />

@@ -3,13 +3,20 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { AuthenticatedTemplate, useMsal } from "@azure/msal-react";
 
+import { NavLink } from "react-router-dom";
+
 import { classNames } from "../utils";
 import { useStore } from "../store.ts";
 
-export default function Example() {
+export default function Navbar() {
   const { instance } = useMsal();
 
   const profilePhotoURL = useStore((state) => state.profileImageURL);
+
+  const navigation = [
+    { name: "Home", href: `/`, current: true },
+    { name: "Hours Dashboard", href: `/hours`, current: true },
+  ];
 
   return (
     <Disclosure as="nav" className="bg-gray-800">
@@ -36,6 +43,24 @@ export default function Example() {
                     src="https://www.profoundlogic.com/wp-content/uploads/2020/11/cropped-Profound_Logic_icon.png"
                     alt="Profound Logic"
                   />
+                </div>
+
+                <div className="hidden sm:ml-6 sm:block">
+                  <div className="flex space-x-4">
+                    {navigation.map((item) => (
+                      <NavLink
+                        key={item.name}
+                        to={item.href}
+                        className={({ isActive }) =>
+                          isActive
+                            ? "bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium"
+                            : "text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                        }
+                      >
+                        {item.name}
+                      </NavLink>
+                    ))}
+                  </div>
                 </div>
               </div>
               <AuthenticatedTemplate>
@@ -107,7 +132,6 @@ export default function Example() {
               </AuthenticatedTemplate>
             </div>
           </div>
-
           <Disclosure.Panel className="sm:hidden"></Disclosure.Panel>
         </>
       )}

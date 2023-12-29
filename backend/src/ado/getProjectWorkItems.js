@@ -28,7 +28,7 @@ async function getProjectWorkItems() {
 
       const cleanedRevisions = projectWorkItems.map((x) => {
         return {
-          id: x.id,
+          workItemId: x.id,
           revision: x.rev,
           title: x.fields["System.Title"],
           assignedTo:

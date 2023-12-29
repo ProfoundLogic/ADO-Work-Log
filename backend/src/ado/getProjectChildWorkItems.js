@@ -1,5 +1,3 @@
-const database = require("../db/database.js");
-const needle = require("needle");
 const getChildWorkItems = require("./getChildWorkItems.js");
 
 const queryHttpOptions = {
@@ -28,7 +26,7 @@ async function getProjectChildWorkItems(projectWorkItem) {
 
   console.log(`Found ${matrix.length} work items. Flattening...`);
 
-  const flattenedMatrix = matrix.map((x) => {
+  return matrix.map((x) => {
     return {
       workItemId: x.id,
       revision: x.rev,
@@ -39,38 +37,6 @@ async function getProjectChildWorkItems(projectWorkItem) {
       created: x.fields["System.CreatedDate"],
     };
   });
-
-  console.log("Fetching work item revisions...");
-
-  const revisions = [];
-  for (const wi of flattenedMatrix) {
-    const wiRevisions = await azureInfo.getWIRevisions(wi.workItemId);
-    revisions.push(wiRevisions);
-  }
-
-  console.log(`Flattening ${revisions.length} work item revisions...`);
-
-  const cleanedRevisions = revisions.reduce((acc, cur) => {
-    return [...acc, ...cur.value];
-  }, []);
-
-  console.log(`Cleaning work item revisions...`);
-
-  const flattenedRevisions = cleanedRevisions.map((x) => {
-    return {
-      workItemId: x.id,
-      revision: x.rev,
-      title: x.fields["System.Title"],
-      assignedTo: x.fields["System.AssignedTo"]?.displayName || "Unassigned",
-      state: x.fields["System.State"],
-      lastUpdated: x.fields["System.ChangedDate"],
-      created: x.fields["System.CreatedDate"],
-    };
-  });
-
-  console.log(`Returned ${flattenedRevisions.length} work item revisions.`);
-
-  return flattenedRevisions;
 }
 
 module.exports = getProjectChildWorkItems;

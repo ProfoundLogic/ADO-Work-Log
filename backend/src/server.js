@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const morgan = require("morgan");
 const database = require("./db/database");
 const seedDatabase = require("./db/seed");
@@ -8,6 +9,7 @@ seedDatabase();
 
 const app = express();
 
+app.use(cors());
 app.use(morgan("common"));
 
 app.get("/", function (req, res, next) {
@@ -43,6 +45,14 @@ app.get("/workItems", function (req, res, next) {
   database
     .select()
     .from("WorkItems")
+    .then((rows) => res.json(rows))
+    .catch(next);
+});
+
+app.get("/timecards", function (req, res, next) {
+  database
+    .select()
+    .from("TimeCards")
     .then((rows) => res.json(rows))
     .catch(next);
 });

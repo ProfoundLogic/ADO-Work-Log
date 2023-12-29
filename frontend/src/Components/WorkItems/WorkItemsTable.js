@@ -5,8 +5,6 @@ export default function WorkItemsTable() {
   const getFilteredWorkItems = useStore((state) => state.getFilteredWorkItems);
   const filteredWorkItems = getFilteredWorkItems();
 
-  const selectedNameFilter = useStore((state) => state.selectedNameFilter);
-
   return (
     <div className="flow-root">
       <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
