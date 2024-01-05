@@ -6,7 +6,7 @@ import { AuthenticatedTemplate, useMsal } from "@azure/msal-react";
 import { NavLink } from "react-router-dom";
 
 import { classNames } from "../utils";
-import { useStore } from "../store.ts";
+import { useStore } from "../store";
 
 export default function Navbar() {
   const { instance } = useMsal();
@@ -16,6 +16,7 @@ export default function Navbar() {
   const navigation = [
     { name: "Home", href: `/`, current: true },
     { name: "Hours Dashboard", href: `/hours`, current: true },
+    { name: "DB Jobs", href: `/jobs`, current: true },
   ];
 
   return (

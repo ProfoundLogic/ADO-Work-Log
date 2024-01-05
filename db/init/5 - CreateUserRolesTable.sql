@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS UserRoles (
+  id INT PRIMARY KEY,
+  userId INT,
+  roleId INT,
+  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT `fk_userId`
+    FOREIGN KEY (userId) REFERENCES Users (id)
+    ON DELETE CASCADE,
+  CONSTRAINT `fk_roleId`
+    FOREIGN KEY (roleId) REFERENCES Roles (id)
+    ON DELETE CASCADE
+)

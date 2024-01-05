@@ -1,10 +1,9 @@
-import { useStore } from "../../store.ts";
+import { useStore } from "../../store";
 import { getOneWorkDayAgo } from "../../utils.js";
 
 export default function CopyToClipboardButton() {
   const selectedNameFilter = useStore((state) => state.selectedNameFilter);
-  const getFilteredWorkItems = useStore((state) => state.getFilteredWorkItems);
-  const filteredWorkItems = getFilteredWorkItems();
+  const filteredWorkItems = [];
   const oneWorkDayAgo = getOneWorkDayAgo();
 
   const copyToClipboard = () => {

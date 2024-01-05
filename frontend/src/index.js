@@ -8,6 +8,7 @@ import "./index.css";
 import WorkItemsPage from "./Components/WorkItems/WorkItemsPage";
 import ErrorPage from "./error-page";
 import HoursPage from "./Components/Hours/HoursPage";
+import JobsPage from "./Components/Jobs/JobsPage";
 
 const configuration = {
   auth: {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
   {
     path: "/hours",
     element: <HoursPage />,
+  },
+  {
+    path: "/jobs",
+    element: <JobsPage />,
   },
 ]);
 

@@ -1,14 +1,27 @@
-import { Fragment } from "react";
+import { useEffect, useState, Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 import { classNames } from "../../utils.js";
-import { useStore } from "../../store.ts";
+import { useStore } from "../../store.js";
 
 export default function WorkItemRevisionFilters() {
-  const selectedNameFilter = useStore((state) => state.selectedNameFilter);
-  const nameFilterOptions = useStore((state) => state.getNameFilterOptions)();
-  const setNameFilter = useStore((state) => state.setSelectedNameFilter);
+  const [filters, setFilters] = useState([]);
+  const { selectedNameFilter, setSelectedNameFilter } = useStore();
+
+  useEffect(() => {
+    fetch("http://localhost/workitems/filters/names")
+      .then((response) => response.json())
+      .then((filterNames) => {
+        const flattened = filterNames.map(
+          (filterName) => filterName.assignedTo
+        );
+        setFilters(flattened);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   return (
     <>
@@ -37,11 +50,11 @@ export default function WorkItemRevisionFilters() {
         >
           <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
             <div className="py-1">
-              {nameFilterOptions.map((nameFilterOption) => (
+              {filters.map((nameFilterOption) => (
                 <Menu.Item key={nameFilterOption}>
                   {({ active }) => (
                     <button
-                      onClick={() => setNameFilter(nameFilterOption)}
+                      onClick={() => setSelectedNameFilter(nameFilterOption)}
                       className={classNames(
                         active ? "bg-gray-100 text-gray-900" : "text-gray-700",
                         "block px-4 py-2 text-sm w-full text-left"
@@ -57,7 +70,7 @@ export default function WorkItemRevisionFilters() {
         </Transition>
       </Menu>
       <button
-        onClick={() => setNameFilter("")}
+        onClick={() => setSelectedNameFilter("")}
         className="mx-2 justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
       >
         Clear Filters

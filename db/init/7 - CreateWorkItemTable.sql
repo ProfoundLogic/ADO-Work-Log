@@ -7,5 +7,6 @@ CREATE TABLE IF NOT EXISTS WorkItems (
   state VARCHAR(255),
   areaPath VARCHAR(255),
   lastUpdated VARCHAR(255),
-  created VARCHAR(255)
+  created VARCHAR(255),
+  UNIQUE KEY workItemRevision (workItemId, revision)
 );

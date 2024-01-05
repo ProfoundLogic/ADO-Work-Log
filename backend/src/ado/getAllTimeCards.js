@@ -1,9 +1,17 @@
 const needle = require("needle");
 const database = require("../db/database");
 
-getAllTimeCards();
-
 async function getAllTimeCards() {
+  let childWorkItemJobId;
+  database
+    .insert({
+      name: `Time Card Refresh`,
+      description: "Daily timecard fetch",
+      segments: 1,
+    })
+    .into("Jobs")
+    .then((insertedIDs) => (childWorkItemJobId = insertedIDs[0]));
+
   const queryHttpOptions = {
     username: process.env.REACT_APP_USERNAME,
     password: process.env.REACT_APP_PASSWORD,
@@ -36,11 +44,16 @@ async function getAllTimeCards() {
   database
     .insert(processedCards)
     .into("TimeCards")
-    .onConflict("id")
-    .merge()
+    .onConflict("timeCardId")
+    .ignore()
     .then((rows) => {
-      console.log("Rows inserted: ", rows.length);
+      database
+        .insert({ jobId: childWorkItemJobId })
+        .into("Actions")
+        .then((rows) => {});
     });
 
   return processedCards;
 }
+
+module.exports = getAllTimeCards;

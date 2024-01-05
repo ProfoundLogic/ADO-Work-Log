@@ -15,6 +15,7 @@ This is a React single page application that displays work performed on Azure De
     - [Updating the service on Lightsail](#updating-the-service-on-lightsail)
   - [Updating the packages](#updating-the-packages)
   - [To-Dos](#to-dos)
+  - [Knex Query Builder](#knex-query-builder)
 
 
 ## Local Machine Requirements
@@ -110,3 +111,5 @@ Occasionally the npm packages will need to be updated to ensure that the applica
 - [ ] Provision a Service Account
 - [ ] Fix the profile image in the header
 - [ ] Backend server using: https://stackoverflow.com/questions/39557764/running-two-nodejs-apps-in-one-docker-image
+
+## Knex Query Builder

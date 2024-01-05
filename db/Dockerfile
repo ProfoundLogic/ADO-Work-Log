@@ -1,2 +1,2 @@
-FROM mariadb:10.6.4-focal
-COPY ./init /docker-entrypoint-initdb.d/
+FROM mariadb:latest
+COPY ./init /docker-entrypoint-initdb.d

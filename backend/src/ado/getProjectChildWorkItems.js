@@ -24,8 +24,6 @@ async function getProjectChildWorkItems(projectWorkItem) {
     matrix.push(...wis);
   }
 
-  console.log(`Found ${matrix.length} work items. Flattening...`);
-
   return matrix.map((x) => {
     return {
       workItemId: x.id,

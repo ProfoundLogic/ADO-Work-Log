@@ -7,10 +7,13 @@ import {
 import { LockClosedIcon } from "@heroicons/react/20/solid";
 
 import { classNames } from "../utils.js";
-import { useStore } from "../store.ts";
+import { useStore } from "../store";
 
 export default function SignedOut() {
   const setProfileImageURL = useStore((state) => state.setProfileImageURL);
+  const setSelectedNameFilter = useStore(
+    (state) => state.setSelectedNameFilter
+  );
 
   const handleLogin = () => {
     instance.loginRedirect();
@@ -41,6 +44,7 @@ export default function SignedOut() {
           account: account,
         })
         .then((response) => {
+          setSelectedNameFilter(response.account.name);
           callMsGraph(response.accessToken);
         });
     }

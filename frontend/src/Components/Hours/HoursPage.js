@@ -36,7 +36,7 @@ export default function HoursPage() {
   const dateBrackets = createDateBrackets();
 
   useEffect(() => {
-    fetch("http://localhost/timecards")
+    fetch("http://localhost/timecards/list")
       .then((response) => response.json())
       .then((timecards) => {
         const employees = timecards.reduce((acc, curr) => {
@@ -105,7 +105,7 @@ export default function HoursPage() {
         <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
-              <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between flex-col">
+              <div className="dden sm:flex sm:flex-1 sm:items-center sm:justify-between flex-col">
                 <Paginator
                   items={rowData}
                   itemsPerPage={20}
